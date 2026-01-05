@@ -3,7 +3,6 @@
  */
 
 import type { AppState, Note } from "./state";
-import type { NoteInput } from "./types.d";
 import type { FieldName } from "../../types/validation";
 import { validateField, validateForm } from "./validation";
 import * as api from "./api";
@@ -13,68 +12,68 @@ import { initialForm, initialFormErrors, initialFormTouched } from "./state";
 /**
  * エラーメッセージを取得
  */
-function getErrorMessage(e: unknown): string {
+const getErrorMessage = (e: unknown): string => {
   return e instanceof ApiError ? e.message : "通信エラーが発生しました";
-}
+};
 
 /**
  * フォームをリセット
  */
-export function resetForm(state: AppState): void {
+export const resetForm = (state: AppState): void => {
   state.form = { ...initialForm };
   state.formErrors = { ...initialFormErrors };
   state.formTouched = { ...initialFormTouched };
-}
+};
 
 /**
  * フィールドをバリデート
  */
-export function validateFormField(state: AppState, field: FieldName): void {
+export const validateFormField = (state: AppState, field: FieldName): void => {
   state.formTouched[field] = true;
   state.formErrors[field] = validateField(field, state.form[field]);
-}
+};
 
 /**
  * フォーム全体をバリデート
  */
-export function validateFormAll(state: AppState): boolean {
+export const validateFormAll = (state: AppState): boolean => {
   state.formTouched.title = true;
   state.formTouched.content = true;
   const result = validateForm(state.form);
   state.formErrors = result.errors;
   return result.isValid;
-}
+};
 
 /**
  * ノート一覧を取得
  */
-export async function fetchNotes(state: AppState): Promise<void> {
+export const fetchNotes = async (state: AppState): Promise<void> => {
   try {
     state.notes = await api.fetchNotes();
   } catch (e) {
     state.error = getErrorMessage(e);
   }
-}
+};
 
 /**
  * 編集用にフォームを初期化
  */
-export function initEditForm(state: AppState, note: Note): void {
+export const initEditForm = (state: AppState, note: Note): void => {
   state.form = {
     title: note.title,
     content: note.content,
   };
   state.formErrors = { ...initialFormErrors };
   state.formTouched = { ...initialFormTouched };
-}
+};
 
 /**
  * ノートを作成
  */
-export async function createNote(
+export const createNote = async (
   state: AppState,
   onSuccess: () => void
-): Promise<void> {
+): Promise<void> => {
   if (state.isLoading) return;
   if (!validateFormAll(state)) return;
 
@@ -93,16 +92,16 @@ export async function createNote(
   } finally {
     state.isLoading = false;
   }
-}
+};
 
 /**
  * ノートを更新
  */
-export async function updateNote(
+export const updateNote = async (
   state: AppState,
   noteId: number,
   onSuccess: () => void
-): Promise<void> {
+): Promise<void> => {
   if (state.isLoading) return;
   if (!validateFormAll(state)) return;
 
@@ -121,12 +120,12 @@ export async function updateNote(
   } finally {
     state.isLoading = false;
   }
-}
+};
 
 /**
  * ノートを削除
  */
-export async function deleteNote(state: AppState, id: number): Promise<void> {
+export const deleteNote = async (state: AppState, id: number): Promise<void> => {
   if (state.isLoading) return;
 
   state.isLoading = true;
@@ -142,4 +141,4 @@ export async function deleteNote(state: AppState, id: number): Promise<void> {
   } finally {
     state.isLoading = false;
   }
-}
+};

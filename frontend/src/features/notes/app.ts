@@ -13,7 +13,7 @@ import { formatDateJa } from "../../lib/date";
 /**
  * Alpine.js用のアプリケーション定義
  */
-export function noteApp() {
+export const noteApp = () => {
   return {
     // 状態（state.tsから初期値を取得）
     ...initialState,
@@ -94,7 +94,7 @@ export function noteApp() {
       await actions.deleteNote(this as AppState, id);
     },
   };
-}
+};
 
 // グローバルに公開（Alpine.js から参照するため）
 declare global {

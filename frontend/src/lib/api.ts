@@ -20,7 +20,7 @@ export class ApiError extends Error {
 /**
  * API レスポンスの処理
  */
-export async function handleResponse<T>(response: Response): Promise<T> {
+export const handleResponse = async <T>(response: Response): Promise<T> => {
   const data = await response.json();
 
   if (!response.ok) {
@@ -28,20 +28,20 @@ export async function handleResponse<T>(response: Response): Promise<T> {
   }
 
   return data as T;
-}
+};
 
 /**
  * GETリクエスト
  */
-export async function get<T>(path: string): Promise<T> {
+export const get = async <T>(path: string): Promise<T> => {
   const response = await fetch(`${API_BASE}${path}`);
   return handleResponse<T>(response);
-}
+};
 
 /**
  * POSTリクエスト
  */
-export async function post<T, U>(path: string, body: U): Promise<T> {
+export const post = async <T, U>(path: string, body: U): Promise<T> => {
   const response = await fetch(`${API_BASE}${path}`, {
     method: "POST",
     headers: {
@@ -50,12 +50,12 @@ export async function post<T, U>(path: string, body: U): Promise<T> {
     body: JSON.stringify(body),
   });
   return handleResponse<T>(response);
-}
+};
 
 /**
  * PUTリクエスト
  */
-export async function put<T, U>(path: string, body: U): Promise<T> {
+export const put = async <T, U>(path: string, body: U): Promise<T> => {
   const response = await fetch(`${API_BASE}${path}`, {
     method: "PUT",
     headers: {
@@ -64,14 +64,14 @@ export async function put<T, U>(path: string, body: U): Promise<T> {
     body: JSON.stringify(body),
   });
   return handleResponse<T>(response);
-}
+};
 
 /**
  * DELETEリクエスト
  */
-export async function del<T>(path: string): Promise<T> {
+export const del = async <T>(path: string): Promise<T> => {
   const response = await fetch(`${API_BASE}${path}`, {
     method: "DELETE",
   });
   return handleResponse<T>(response);
-}
+};

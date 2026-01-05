@@ -1,7 +1,7 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { noteController } from "./presentation/noteController.js";
+import { noteController } from "./controller/noteController.js";
 
 const app = new Hono();
 

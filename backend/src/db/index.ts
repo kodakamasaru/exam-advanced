@@ -1,2 +1,2 @@
 export { db } from "./connection.js";
-export { notes } from "./schema.js";
+export * from "./schema/index.js";

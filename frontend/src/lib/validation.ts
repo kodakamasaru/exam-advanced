@@ -22,14 +22,14 @@ export const ValidationMessages = {
 /**
  * バリデーション関数を生成
  */
-export function createValidator(
+export const createValidator = (
   rules: Record<FieldName, ValidationRule>,
   labels: Record<FieldName, string>
-) {
+) => {
   /**
    * 単一フィールドのバリデーション
    */
-  function validateField(field: FieldName, value: string): string | null {
+  const validateField = (field: FieldName, value: string): string | null => {
     const rule = rules[field];
     if (!rule) return null;
 
@@ -45,12 +45,12 @@ export function createValidator(
     }
 
     return null;
-  }
+  };
 
   /**
    * フォーム全体のバリデーション
    */
-  function validateForm(form: Record<FieldName, string>): ValidationResult {
+  const validateForm = (form: Record<FieldName, string>): ValidationResult => {
     const errors: ValidationErrors = {
       title: validateField("title", form.title),
       content: validateField("content", form.content),
@@ -59,12 +59,12 @@ export function createValidator(
     const isValid = errors.title === null && errors.content === null;
 
     return { isValid, errors };
-  }
+  };
 
   /**
    * 文字数カウント情報を取得
    */
-  function getCharacterCount(field: FieldName, value: string): CharacterCount {
+  const getCharacterCount = (field: FieldName, value: string): CharacterCount => {
     const rule = rules[field];
     const max = rule?.maxLength ?? 0;
     const current = (value ?? "").length;
@@ -76,11 +76,11 @@ export function createValidator(
       remaining,
       isOver: remaining < 0,
     };
-  }
+  };
 
   return {
     validateField,
     validateForm,
     getCharacterCount,
   };
-}
+};

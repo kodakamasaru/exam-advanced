@@ -1,21 +1,44 @@
 import { Hono } from "hono";
-import {
-  listNotes,
-  createNote,
-  findNote,
-  updateNote,
-  deleteNote,
-} from "../application/usecase/index.js";
-import { parseNoteJsonData, parseId } from "../shared/parseFormData.js";
+import { NoteService } from "../service/noteService.js";
+import type { Result } from "../lib/result.js";
+import { ok, err } from "../lib/result.js";
+import type { CreateNoteRequest } from "../dto/note.js";
 
 export const noteController = new Hono();
+
+/**
+ * IDのパース
+ */
+const parseId = (param: string): Result<number> => {
+  const id = parseInt(param, 10);
+  if (isNaN(id) || id <= 0) {
+    return err("IDは正の整数で指定してください");
+  }
+  return ok(id);
+};
+
+/**
+ * JSONデータのパース
+ */
+const parseNoteJsonData = (body: unknown): CreateNoteRequest => {
+  if (typeof body !== "object" || body === null) {
+    return { title: "", content: "" };
+  }
+
+  const data = body as Record<string, unknown>;
+
+  return {
+    title: typeof data.title === "string" ? data.title : "",
+    content: typeof data.content === "string" ? data.content : "",
+  };
+};
 
 /**
  * ノート一覧取得
  * GET /api/notes
  */
 noteController.get("/notes", async (ctx) => {
-  const result = await listNotes();
+  const result = await NoteService.list();
 
   if (!result.ok) {
     return ctx.json({ error: result.error }, 500);
@@ -32,10 +55,7 @@ noteController.post("/notes", async (ctx) => {
   const body = await ctx.req.json();
   const formData = parseNoteJsonData(body);
 
-  const result = await createNote({
-    title: formData.title,
-    content: formData.content,
-  });
+  const result = await NoteService.create(formData.title, formData.content);
 
   if (!result.ok) {
     return ctx.json({ error: result.error }, 422);
@@ -54,7 +74,7 @@ noteController.get("/notes/:id", async (ctx) => {
     return ctx.json({ error: idResult.error }, 400);
   }
 
-  const result = await findNote(idResult.value);
+  const result = await NoteService.find(idResult.value);
   if (!result.ok) {
     return ctx.json({ error: result.error }, 404);
   }
@@ -75,7 +95,11 @@ noteController.put("/notes/:id", async (ctx) => {
   const body = await ctx.req.json();
   const formData = parseNoteJsonData(body);
 
-  const result = await updateNote(idResult.value, formData);
+  const result = await NoteService.update(
+    idResult.value,
+    formData.title,
+    formData.content
+  );
 
   if (!result.ok) {
     return ctx.json({ error: result.error }, 422);
@@ -94,7 +118,7 @@ noteController.delete("/notes/:id", async (ctx) => {
     return ctx.json({ error: idResult.error }, 400);
   }
 
-  const result = await deleteNote(idResult.value);
+  const result = await NoteService.delete(idResult.value);
 
   if (!result.ok) {
     return ctx.json({ error: result.error }, 404);

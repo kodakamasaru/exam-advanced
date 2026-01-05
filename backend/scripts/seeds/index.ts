@@ -2,7 +2,7 @@ import { seedNotes } from "./notes.js";
 
 const seeds = [seedNotes];
 
-async function runSeeds() {
+const runSeeds = async () => {
   console.log("Running seeds...");
 
   for (const seed of seeds) {
@@ -10,7 +10,7 @@ async function runSeeds() {
   }
 
   console.log("All seeds completed.");
-}
+};
 
 runSeeds()
   .then(() => process.exit(0))

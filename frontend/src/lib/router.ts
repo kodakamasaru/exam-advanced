@@ -12,7 +12,7 @@ export interface RouterState {
 /**
  * URLハッシュからルート情報を解析
  */
-export function parseRoute(): RouterState {
+export const parseRoute = (): RouterState => {
   const hash = window.location.hash.slice(1); // '#' を除去
 
   if (hash === "create" || hash === "/create") {
@@ -25,12 +25,12 @@ export function parseRoute(): RouterState {
   }
 
   return { currentRoute: "list", editingNoteId: null };
-}
+};
 
 /**
  * ルートを変更
  */
-export function navigateTo(route: Route, noteId?: number): void {
+export const navigateTo = (route: Route, noteId?: number): void => {
   switch (route) {
     case "list":
       window.location.hash = "";
@@ -44,13 +44,13 @@ export function navigateTo(route: Route, noteId?: number): void {
       }
       break;
   }
-}
+};
 
 /**
  * ルート変更イベントをリッスン
  */
-export function onRouteChange(callback: (state: RouterState) => void): void {
+export const onRouteChange = (callback: (state: RouterState) => void): void => {
   window.addEventListener("hashchange", () => {
     callback(parseRoute());
   });
-}
+};
