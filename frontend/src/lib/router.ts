@@ -20,8 +20,11 @@ export const parseRoute = (): RouterState => {
   }
 
   const editMatch = hash.match(/^\/?(edit)\/(\d+)$/);
-  if (editMatch?.[2]) {
-    return { currentRoute: "edit", editingNoteId: parseInt(editMatch[2], 10) };
+  if (editMatch !== null) {
+    const noteIdStr = editMatch[2];
+    if (noteIdStr !== undefined) {
+      return { currentRoute: "edit", editingNoteId: parseInt(noteIdStr, 10) };
+    }
   }
 
   return { currentRoute: "list", editingNoteId: null };

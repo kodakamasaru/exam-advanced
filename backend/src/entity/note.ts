@@ -1,5 +1,5 @@
 /**
- * ノートエンティティ
+ * ノートエンティティ（内部データモデル）
  */
 export interface Note {
   id: number;

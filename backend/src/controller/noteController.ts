@@ -1,37 +1,17 @@
 import { Hono } from "hono";
 import { NoteService } from "../service/noteService.js";
-import type { Result } from "../lib/result.js";
-import { ok, err } from "../lib/result.js";
-import type { CreateNoteRequest } from "../dto/note.js";
+import type {
+  NoteInput,
+  NoteResponse,
+  NotesResponse,
+  DeleteResponse,
+} from "../dto/note.js";
+import type { ErrorResponse } from "../dto/common.js";
+import { validateNoteInput } from "../middleware/noteValidator.js";
+import { validate, getValidatedBody } from "../middleware/validation.js";
+import { parseId, getParsedId } from "../middleware/parseId.js";
 
 export const noteController = new Hono();
-
-/**
- * IDのパース
- */
-const parseId = (param: string): Result<number> => {
-  const id = parseInt(param, 10);
-  if (isNaN(id) || id <= 0) {
-    return err("IDは正の整数で指定してください");
-  }
-  return ok(id);
-};
-
-/**
- * JSONデータのパース
- */
-const parseNoteJsonData = (body: unknown): CreateNoteRequest => {
-  if (typeof body !== "object" || body === null) {
-    return { title: "", content: "" };
-  }
-
-  const data = body as Record<string, unknown>;
-
-  return {
-    title: typeof data.title === "string" ? data.title : "",
-    content: typeof data.content === "string" ? data.content : "",
-  };
-};
 
 /**
  * ノート一覧取得
@@ -41,88 +21,81 @@ noteController.get("/notes", async (ctx) => {
   const result = await NoteService.list();
 
   if (!result.ok) {
-    return ctx.json({ error: result.error }, 500);
+    return ctx.json<ErrorResponse>({ error: result.error }, 500);
   }
 
-  return ctx.json({ notes: result.value });
+  return ctx.json<NotesResponse>({ notes: result.value });
 });
 
 /**
  * ノート作成
  * POST /api/notes
  */
-noteController.post("/notes", async (ctx) => {
-  const body = await ctx.req.json();
-  const formData = parseNoteJsonData(body);
+noteController.post(
+  "/notes",
+  validate<NoteInput>(validateNoteInput),
+  async (ctx) => {
+    const body = getValidatedBody<NoteInput>(ctx);
 
-  const result = await NoteService.create(formData.title, formData.content);
+    const result = await NoteService.create(body.title, body.content);
 
-  if (!result.ok) {
-    return ctx.json({ error: result.error }, 422);
+    if (!result.ok) {
+      return ctx.json<ErrorResponse>({ error: result.error }, 500);
+    }
+
+    return ctx.json<NoteResponse>({ note: result.value }, 201);
   }
-
-  return ctx.json({ note: result.value }, 201);
-});
+);
 
 /**
  * ノート取得
  * GET /api/notes/:id
  */
-noteController.get("/notes/:id", async (ctx) => {
-  const idResult = parseId(ctx.req.param("id") || "");
-  if (!idResult.ok) {
-    return ctx.json({ error: idResult.error }, 400);
-  }
+noteController.get("/notes/:id", parseId(), async (ctx) => {
+  const id = getParsedId(ctx);
 
-  const result = await NoteService.find(idResult.value);
+  const result = await NoteService.find(id);
   if (!result.ok) {
-    return ctx.json({ error: result.error }, 404);
+    return ctx.json<ErrorResponse>({ error: result.error }, 404);
   }
 
-  return ctx.json({ note: result.value });
+  return ctx.json<NoteResponse>({ note: result.value });
 });
 
 /**
  * ノート更新
  * PUT /api/notes/:id
  */
-noteController.put("/notes/:id", async (ctx) => {
-  const idResult = parseId(ctx.req.param("id") || "");
-  if (!idResult.ok) {
-    return ctx.json({ error: idResult.error }, 400);
+noteController.put(
+  "/notes/:id",
+  parseId(),
+  validate<NoteInput>(validateNoteInput),
+  async (ctx) => {
+    const id = getParsedId(ctx);
+    const body = getValidatedBody<NoteInput>(ctx);
+
+    const result = await NoteService.update(id, body.title, body.content);
+
+    if (!result.ok) {
+      return ctx.json<ErrorResponse>({ error: result.error }, 404);
+    }
+
+    return ctx.json<NoteResponse>({ note: result.value });
   }
-
-  const body = await ctx.req.json();
-  const formData = parseNoteJsonData(body);
-
-  const result = await NoteService.update(
-    idResult.value,
-    formData.title,
-    formData.content
-  );
-
-  if (!result.ok) {
-    return ctx.json({ error: result.error }, 422);
-  }
-
-  return ctx.json({ note: result.value });
-});
+);
 
 /**
  * ノート削除
  * DELETE /api/notes/:id
  */
-noteController.delete("/notes/:id", async (ctx) => {
-  const idResult = parseId(ctx.req.param("id") || "");
-  if (!idResult.ok) {
-    return ctx.json({ error: idResult.error }, 400);
-  }
+noteController.delete("/notes/:id", parseId(), async (ctx) => {
+  const id = getParsedId(ctx);
 
-  const result = await NoteService.delete(idResult.value);
+  const result = await NoteService.delete(id);
 
   if (!result.ok) {
-    return ctx.json({ error: result.error }, 404);
+    return ctx.json<ErrorResponse>({ error: result.error }, 404);
   }
 
-  return ctx.json({ success: true });
+  return ctx.json<DeleteResponse>({ success: true });
 });

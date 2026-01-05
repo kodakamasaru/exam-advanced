@@ -2,13 +2,29 @@
  * Note機能のバリデーション
  */
 
-import type { FieldName, ValidationRule } from "../../types/validation";
+import type { ValidationRule } from "../../types/validation";
 import { createValidator } from "../../lib/validation";
+
+/**
+ * ノートのバリデーションルール型
+ */
+interface NoteValidationRuleSet {
+  title: ValidationRule;
+  content: ValidationRule;
+}
+
+/**
+ * ノートのフィールドラベル型
+ */
+interface NoteFieldLabelSet {
+  title: string;
+  content: string;
+}
 
 /**
  * ノートのバリデーションルール
  */
-const NoteValidationRules: Record<FieldName, ValidationRule> = {
+const NoteValidationRules: NoteValidationRuleSet = {
   title: {
     maxLength: 30,
     required: true,
@@ -22,7 +38,7 @@ const NoteValidationRules: Record<FieldName, ValidationRule> = {
 /**
  * フィールド名の日本語マッピング
  */
-const NoteFieldLabels: Record<FieldName, string> = {
+const NoteFieldLabels: NoteFieldLabelSet = {
   title: "タイトル",
   content: "内容",
 };

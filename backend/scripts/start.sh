@@ -8,4 +8,4 @@ echo "Running seed..."
 pnpm --filter backend exec tsx scripts/seeds/index.ts
 
 echo "Starting API server..."
-exec pnpm --filter backend exec tsx watch src/server.ts
+exec pnpm --filter backend exec tsx watch src/index.ts
