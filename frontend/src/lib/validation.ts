@@ -1,69 +1,36 @@
 /**
- * 共通バリデーションユーティリティ
+ * 共通バリデーションユーティリティ（汎用）
  */
 
 import type {
-  FieldName,
-  ValidationRule,
+  FieldConfig,
   ValidationResult,
   CharacterCount,
-  ValidationErrors,
-} from "../types/validation";
+} from "../type/validation";
+import { ValidationMessages } from "../type/validation";
 
 /**
- * バリデーションルールセット
+ * バリデーション関数を生成（ジェネリック）
+ *
+ * @param fields - フィールド名をキーとした設定
+ * @returns バリデーション関数群
  */
-interface ValidationRuleSet {
-  title: ValidationRule;
-  content: ValidationRule;
-}
-
-/**
- * フィールドラベルセット
- */
-interface FieldLabelSet {
-  title: string;
-  content: string;
-}
-
-/**
- * フォームデータ
- */
-interface FormData {
-  title: string;
-  content: string;
-}
-
-/**
- * バリデーションエラーメッセージ
- */
-export const ValidationMessages = {
-  required: (fieldName: string): string => `${fieldName}は必須です`,
-  maxLength: (fieldName: string, max: number): string =>
-    `${fieldName}は${max}文字以内で入力してください`,
-};
-
-/**
- * バリデーション関数を生成
- */
-export const createValidator = (
-  rules: ValidationRuleSet,
-  labels: FieldLabelSet
+export const createValidator = <T extends string>(
+  fields: Record<T, FieldConfig>
 ) => {
   /**
    * 単一フィールドのバリデーション
    */
-  const validateField = (field: FieldName, value: string): string | null => {
-    const rule = rules[field];
-    const label = labels[field];
+  const validateField = (field: T, value: string): string | null => {
+    const config = fields[field];
     const trimmedValue = value.trim();
 
-    if (rule.required && trimmedValue === "") {
-      return ValidationMessages.required(label);
+    if (config.required && trimmedValue === "") {
+      return ValidationMessages.required(config.label);
     }
 
-    if (rule.maxLength > 0 && trimmedValue.length > rule.maxLength) {
-      return ValidationMessages.maxLength(label, rule.maxLength);
+    if (config.maxLength > 0 && trimmedValue.length > config.maxLength) {
+      return ValidationMessages.maxLength(config.label, config.maxLength);
     }
 
     return null;
@@ -72,13 +39,15 @@ export const createValidator = (
   /**
    * フォーム全体のバリデーション
    */
-  const validateForm = (form: FormData): ValidationResult => {
-    const errors: ValidationErrors = {
-      title: validateField("title", form.title),
-      content: validateField("content", form.content),
-    };
+  const validateForm = (form: Record<T, string>): ValidationResult<T> => {
+    const fieldNames = Object.keys(fields) as T[];
+    const errors = {} as Record<T, string | null>;
 
-    const isValid = errors.title === null && errors.content === null;
+    for (const field of fieldNames) {
+      errors[field] = validateField(field, form[field]);
+    }
+
+    const isValid = Object.values(errors).every((error) => error === null);
 
     return { isValid, errors };
   };
@@ -86,9 +55,9 @@ export const createValidator = (
   /**
    * 文字数カウント情報を取得
    */
-  const getCharacterCount = (field: FieldName, value: string): CharacterCount => {
-    const rule = rules[field];
-    const max = rule.maxLength;
+  const getCharacterCount = (field: T, value: string): CharacterCount => {
+    const config = fields[field];
+    const max = config.maxLength;
     const current = value.length;
     const remaining = max - current;
 
@@ -100,9 +69,15 @@ export const createValidator = (
     };
   };
 
+  /**
+   * フィールド設定を取得
+   */
+  const getFieldConfig = (field: T): FieldConfig => fields[field];
+
   return {
     validateField,
     validateForm,
     getCharacterCount,
+    getFieldConfig,
   };
 };

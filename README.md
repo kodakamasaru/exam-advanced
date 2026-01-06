@@ -8,7 +8,7 @@
 ### 使用技術
 
 - **バックエンド**: Hono + Drizzle ORM + PostgreSQL
-- **フロントエンド**: Alpine.js + Vite + TypeScript
+- **フロントエンド**: Preact + Vite + TypeScript
 - **コンテナ**: Docker + Docker Compose
 
 ## 環境構築・起動方法
@@ -62,9 +62,12 @@ docker-compose down
 │
 ├── frontend/                   # フロントエンド
 │   ├── src/
-│   │   ├── features/notes/     # ノート機能
+│   │   ├── feature/notes/      # ノート機能
+│   │   ├── component/          # 共通コンポーネント
 │   │   ├── lib/                # 共通ユーティリティ
-│   │   └── index.ts            # エントリーポイント
+│   │   ├── type/               # 型定義
+│   │   ├── App.tsx             # ルートコンポーネント
+│   │   └── main.tsx            # エントリーポイント
 │   ├── index.html
 │   └── package.json
 │
@@ -160,7 +163,7 @@ docker-compose down
 
 - [Hono公式ドキュメント](https://hono.dev/)
 - [Drizzle ORM公式ドキュメント](https://orm.drizzle.team/)
-- [Alpine.js公式ドキュメント](https://alpinejs.dev/)
+- [Preact公式ドキュメント](https://preactjs.com/)
 - [Docker公式ドキュメント](https://docs.docker.com/)
 
 ---
