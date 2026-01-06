@@ -18,10 +18,12 @@ export function NoteList(_props: NoteListProps) {
   const [notes, setNotes] = useState<Note[]>([]);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchNotes = async () => {
       const result = await noteApi.list();
+      setIsLoading(false);
       if (result.ok) {
         setNotes(result.data);
       } else {
@@ -55,7 +57,9 @@ export function NoteList(_props: NoteListProps) {
         </button>
       </div>
 
-      {notes.length === 0 ? (
+      {isLoading ? (
+        <p class="empty-message">読み込み中...</p>
+      ) : notes.length === 0 ? (
         <p class="empty-message">ノートがありません。新しいノートを作成してください。</p>
       ) : (
         <ul class="note-list">

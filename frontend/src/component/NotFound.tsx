@@ -1,0 +1,24 @@
+/**
+ * 404ページ
+ */
+
+import { route } from "preact-router";
+import { Layout } from "./Layout";
+
+interface NotFoundProps {
+  default?: boolean;
+}
+
+export function NotFound(_props: NotFoundProps) {
+  return (
+    <Layout>
+      <div class="not-found">
+        <h1 class="page-title">ページが見つかりません</h1>
+        <p class="empty-message">お探しのページは存在しないか、移動した可能性があります。</p>
+        <button onClick={() => route("/")} class="btn btn--primary">
+          トップに戻る
+        </button>
+      </div>
+    </Layout>
+  );
+}
