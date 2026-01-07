@@ -1,0 +1,39 @@
+/**
+ * テーブルコンポーネント
+ */
+
+.frequency-table {
+  @apply w-full border-collapse;
+}
+
+.frequency-table th,
+.frequency-table td {
+  @apply px-4 py-3 text-left border-b border-gray-200;
+}
+
+.frequency-table th {
+  @apply bg-gray-50 font-semibold text-gray-700 text-sm;
+}
+
+.frequency-table td {
+  @apply text-gray-900;
+}
+
+.frequency-table tbody tr:hover {
+  @apply bg-gray-50;
+}
+
+.frequency-table tbody tr:last-child td {
+  @apply border-b-0;
+}
+
+/* 順位カラム */
+.frequency-table td:first-child {
+  @apply text-center font-medium text-gray-500 w-16;
+}
+
+/* 数値カラム */
+.frequency-table td:nth-child(3),
+.frequency-table td:nth-child(4) {
+  @apply text-right tabular-nums;
+}

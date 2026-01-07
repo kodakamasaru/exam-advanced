@@ -34,6 +34,11 @@ export const StringRules = {
     validate: (value) => value.trim().length <= max,
     message: `${fieldLabel}は${max}文字以内で入力してください`,
   }),
+
+  pattern: (fieldLabel: string, regex: RegExp, errorMessage: string): ValidationRule => ({
+    validate: (value) => regex.test(value),
+    message: errorMessage.replace("{label}", fieldLabel),
+  }),
 };
 
 /**
@@ -89,4 +94,66 @@ export const formatValidationErrors = (errors: ValidationError[]): string => {
     return "バリデーションエラー";
   }
   return first.message;
+};
+
+/**
+ * ルール定義（ユニオン型）
+ */
+export type RuleDefinition =
+  | { type: "required" }
+  | { type: "maxLength"; value: number }
+  | { type: "pattern"; value: RegExp; message: string };
+
+/**
+ * フィールドスキーマ
+ */
+export interface FieldSchema {
+  label: string;
+  rules: readonly RuleDefinition[];
+}
+
+/**
+ * バリデーションスキーマ（型安全）
+ */
+export type ValidationSchema<T> = {
+  [K in keyof T]: FieldSchema;
+};
+
+/**
+ * ルール定義からValidationRuleを生成
+ */
+const buildRulesFromDefinitions = (
+  label: string,
+  definitions: readonly RuleDefinition[]
+): ValidationRule[] => {
+  return definitions.map((def) => {
+    switch (def.type) {
+      case "required":
+        return StringRules.required(label);
+      case "maxLength":
+        return StringRules.maxLength(label, def.value);
+      case "pattern":
+        return StringRules.pattern(label, def.value, def.message);
+    }
+  });
+};
+
+/**
+ * スキーマからバリデータを生成
+ */
+export const createValidatorFromSchema = <
+  T extends { [P in K]: string },
+  K extends string = keyof T & string,
+>(
+  schema: ValidationSchema<T>
+): ((input: T) => Result<T, ValidationError<K>[]>) => {
+  const fields = Object.entries(schema).map(([field, config]) => ({
+    field: field as K,
+    rules: buildRulesFromDefinitions(
+      (config as FieldSchema).label,
+      (config as FieldSchema).rules
+    ),
+  }));
+
+  return createValidator<T, K>(fields);
 };

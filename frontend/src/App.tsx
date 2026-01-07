@@ -3,13 +3,14 @@
  */
 
 import Router from "preact-router";
-import { noteRouteComponents } from "./feature/notes";
-import { NotFound } from "./component";
+import { analysisRouteComponents } from "./feature/analysis";
+import { NotFound, ErrorPage } from "./component";
 
 export function App() {
   return (
     <Router>
-      {noteRouteComponents}
+      {analysisRouteComponents}
+      <ErrorPage path="/error" />
       <NotFound default />
     </Router>
   );

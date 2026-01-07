@@ -1,0 +1,26 @@
+/**
+ * アラートコンポーネント
+ */
+
+.alert {
+  @apply flex items-center gap-3 p-4 rounded-lg mb-4;
+}
+
+.alert--error {
+  @apply bg-red-50 border border-red-200 text-red-700;
+}
+
+.alert--success {
+  @apply bg-green-50 border border-green-200 text-green-700;
+}
+
+.alert__close {
+  @apply ml-auto shrink-0
+         p-1
+         text-current opacity-60
+         hover:opacity-100
+         transition-opacity duration-200
+         cursor-pointer
+         bg-transparent border-none
+         text-xl leading-none font-bold;
+}

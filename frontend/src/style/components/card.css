@@ -1,0 +1,61 @@
+/**
+ * カードコンポーネント
+ */
+
+.card-list {
+  @apply space-y-3;
+}
+
+.card {
+  @apply bg-white border border-gray-200 rounded-lg p-4 shadow-sm;
+}
+
+.card--clickable {
+  @apply cursor-pointer
+         transition-all duration-200
+         hover:border-blue-400 hover:shadow-md;
+}
+
+.card__title {
+  @apply font-semibold text-gray-900 mb-1;
+}
+
+.card__preview {
+  @apply text-sm text-gray-600 mb-2
+         overflow-hidden whitespace-nowrap text-ellipsis;
+}
+
+.card__meta {
+  @apply flex justify-between text-sm text-gray-500;
+}
+
+.result-info {
+  @apply bg-gray-50 rounded-lg p-4 mb-6 space-y-2;
+}
+
+.result-info__item {
+  @apply flex items-center gap-3;
+}
+
+.result-info__label {
+  @apply text-sm font-medium text-gray-500 min-w-20;
+}
+
+.result-info__value {
+  @apply text-gray-900;
+}
+
+.result-section {
+  @apply mb-6;
+}
+
+.result-section__title {
+  @apply text-lg font-semibold text-gray-900 mb-3 pb-2 border-b border-gray-200;
+}
+
+.result-text {
+  @apply bg-gray-50 rounded-lg p-4
+         text-sm text-gray-700
+         whitespace-pre-wrap break-words
+         max-h-[300px] overflow-y-auto;
+}

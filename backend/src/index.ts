@@ -1,7 +1,8 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { noteController } from "./controller/noteController.js";
+import { analysisController } from "./controller/index.js";
+import { logger } from "./lib/index.js";
 
 const app = new Hono();
 
@@ -9,14 +10,14 @@ const app = new Hono();
 app.use("/api/*", cors());
 
 // APIルート
-app.route("/api", noteController);
+app.route("/api/analyses", analysisController);
 
 // ヘルスチェック
 app.get("/health", (c) => c.json({ status: "ok" }));
 
 const port = parseInt(process.env.PORT || "8080", 10);
 
-console.log(`API Server is running on http://localhost:${port}`);
+logger.info(`API Server is running on http://localhost:${port}`);
 
 serve({
   fetch: app.fetch,

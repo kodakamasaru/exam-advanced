@@ -1,0 +1,53 @@
+/**
+ * レイアウト - コンテナ
+ */
+
+.container {
+  @apply max-w-3xl mx-auto px-4 py-6;
+}
+
+.page-header {
+  @apply flex flex-wrap justify-between items-start gap-2 mb-6 pb-4 border-b-2 border-blue-500;
+}
+
+.page-header__actions {
+  @apply flex gap-2;
+}
+
+.page-description {
+  @apply w-full text-sm text-gray-600 order-2;
+}
+
+.page-title {
+  @apply text-2xl font-bold text-gray-900;
+}
+
+/* 空状態 */
+.empty-state {
+  @apply text-center py-12 text-gray-500;
+}
+
+.empty-state p {
+  @apply mb-2;
+}
+
+.empty-state p:first-child {
+  @apply text-lg font-medium text-gray-600;
+}
+
+/* エラー系ページ共通 */
+.status-page {
+  @apply text-center py-12;
+}
+
+.status-page .page-title {
+  @apply mb-4;
+}
+
+.status-page__message {
+  @apply text-gray-600;
+}
+
+.status-page .btn {
+  @apply mt-6;
+}

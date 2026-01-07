@@ -11,17 +11,22 @@ import type { ErrorResponse } from "../dto/common.js";
 const PARSED_ID_KEY = "parsedId";
 
 /**
+ * UUIDの形式チェック
+ */
+const UUID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
  * IDパースミドルウェア
- * :id パラメータを正の整数としてパースし、Contextに格納
+ * :id パラメータをUUIDとしてバリデーションし、Contextに格納
  */
 export const parseId = () => {
   return async (ctx: Context, next: Next): Promise<Response | void> => {
-    const idParam = ctx.req.param("id");
-    const id = parseInt(idParam, 10);
+    const id = ctx.req.param("id");
 
-    if (isNaN(id) || id <= 0) {
+    if (!UUID_REGEX.test(id)) {
       return ctx.json<ErrorResponse>(
-        { error: "IDは正の整数で指定してください" },
+        { error: "IDはUUID形式で指定してください" },
         400
       );
     }
@@ -34,6 +39,6 @@ export const parseId = () => {
 /**
  * パース済みIDを取得
  */
-export const getParsedId = (ctx: Context): number => {
-  return ctx.get(PARSED_ID_KEY) as number;
+export const getParsedId = (ctx: Context): string => {
+  return ctx.get(PARSED_ID_KEY) as string;
 };

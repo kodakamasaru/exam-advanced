@@ -15,10 +15,10 @@ export function Alert({ type, message, onClose }: AlertProps) {
 
   return (
     <div class={className}>
+      <span>{message}</span>
       <button onClick={onClose} class="alert__close">
         &times;
       </button>
-      <span>{message}</span>
     </div>
   );
 }
