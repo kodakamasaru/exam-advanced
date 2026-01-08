@@ -17,41 +17,38 @@ const fieldConfigs: Record<AnalysisFormField, FieldConfig> = {
   },
   text: {
     label: "本文",
-    maxLength: 10000,
+    maxLength: 100000,
     required: true,
   },
 };
 
 /**
- * バリデーター
+ * 英語文章チェック（ASCII + よく使われる記号を許可）
  */
-const baseValidator = createValidator<AnalysisFormField>(fieldConfigs);
-
-/**
- * 英語チェック用バリデーション
- */
-const validateEnglishOnly = (value: string): string | null => {
-  if (!/^[a-zA-Z\s]*$/.test(value)) {
-    return "本文は英語とスペースのみで入力してください";
+const validateEnglishText = (value: string): string | null => {
+  if (!/^[\x00-\x7F•–—''""…©®™€£¥°±×÷]*$/.test(value)) {
+    return "本文は英語の文章のみ入力してください";
   }
   return null;
 };
 
 /**
- * カスタムバリデーション（英語チェック追加）
+ * 基本バリデーター
+ */
+const baseValidator = createValidator<AnalysisFormField>(fieldConfigs);
+
+/**
+ * バリデーター（ASCII文字チェック追加）
  */
 export const analysisValidator = {
   ...baseValidator,
   validateField: (field: AnalysisFormField, value: string): string | null => {
-    // 基本バリデーション
     const baseError = baseValidator.validateField(field, value);
     if (baseError) return baseError;
 
-    // textフィールドの場合、英語チェック
     if (field === "text" && value.trim() !== "") {
-      return validateEnglishOnly(value);
+      return validateEnglishText(value);
     }
-
     return null;
   },
   validateForm: (
@@ -59,14 +56,12 @@ export const analysisValidator = {
   ): { isValid: boolean; errors: Record<AnalysisFormField, string | null> } => {
     const baseResult = baseValidator.validateForm(form);
 
-    // textの英語チェックを追加
     if (baseResult.errors.text === null && form.text.trim() !== "") {
-      baseResult.errors.text = validateEnglishOnly(form.text);
+      baseResult.errors.text = validateEnglishText(form.text);
       if (baseResult.errors.text !== null) {
         baseResult.isValid = false;
       }
     }
-
     return baseResult;
   },
 };

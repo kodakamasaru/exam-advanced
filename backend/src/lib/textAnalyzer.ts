@@ -27,7 +27,7 @@ export interface TextAnalysisResult {
  * テキストを分析して単語頻度を計算
  */
 export const analyzeText = (text: string): TextAnalysisResult => {
-  const words = text.toLowerCase().match(/[a-z]+/g) || [];
+  const words = text.toLowerCase().match(/[a-z]+(?:'[a-z]+)*/g) || [];
   const totalWords = words.length;
 
   if (totalWords === 0) {

@@ -24,11 +24,11 @@ export const CreateAnalysisSchema = {
     label: "本文",
     rules: [
       { type: "required" },
-      { type: "maxLength", value: 10000 },
+      { type: "maxLength", value: 100000 },
       {
         type: "pattern",
-        value: /^[a-zA-Z\s]*$/,
-        message: "{label}は英語とスペースのみで入力してください",
+        value: /^[\x00-\x7F•–—''""…©®™€£¥°±×÷]*$/,
+        message: "{label}は英語の文章のみ入力してください",
       },
     ],
   },
