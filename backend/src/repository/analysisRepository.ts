@@ -21,6 +21,8 @@ interface CreateAnalysisData {
 interface CreateWordFrequencyData {
   word: string;
   count: number;
+  percentage: string;
+  rank: number;
 }
 
 export const analysisRepository = {
@@ -77,15 +79,13 @@ export const analysisRepository = {
     }
 
     if (frequencies.length > 0) {
-      // 頻度でソートしてランクを付与
-      const sortedFrequencies = [...frequencies].sort((a, b) => b.count - a.count);
       await db.insert(wordFrequency).values(
-        sortedFrequencies.map((f, index) => ({
+        frequencies.map((f) => ({
           analysisId: inserted.id,
           word: f.word,
           count: f.count,
-          percentage: ((f.count / data.totalWords) * 100).toFixed(2),
-          rank: index + 1,
+          percentage: f.percentage,
+          rank: f.rank,
         }))
       );
     }

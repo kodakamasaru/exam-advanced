@@ -32,12 +32,6 @@ const ERROR_ANALYSIS_NOT_FOUND = "分析結果が見つかりません";
 const formatDate = (date: Date): string => date.toISOString();
 
 /**
- * パーセンテージを計算
- */
-const calcPercentage = (count: number, total: number): string =>
-  ((count / total) * 100).toFixed(2);
-
-/**
  * 分析履歴一覧取得
  * GET /api/analyses
  */
@@ -89,11 +83,11 @@ analysisController.get("/:id", parseId(), async (ctx) => {
     text: analysis.text,
     totalWords: analysis.totalWords,
     createdAt: formatDate(analysis.createdAt),
-    frequencies: analysis.frequencies.map((f, i) => ({
+    frequencies: analysis.frequencies.map((f) => ({
       word: f.word,
       count: f.count,
-      percentage: calcPercentage(f.count, analysis.totalWords),
-      rank: i + 1,
+      percentage: f.percentage,
+      rank: f.rank,
     })),
   };
 
@@ -113,11 +107,11 @@ analysisController.get("/:id/csv", parseId(), async (ctx) => {
   }
 
   const headers = ["順位", "単語", "出現回数", "出現率(%)"];
-  const rows = analysis.frequencies.map((f, i) => [
-    i + 1,
+  const rows = analysis.frequencies.map((f) => [
+    f.rank,
     f.word,
     f.count,
-    calcPercentage(f.count, analysis.totalWords),
+    f.percentage,
   ]);
   const csv = CsvWriter.write(headers, rows);
 

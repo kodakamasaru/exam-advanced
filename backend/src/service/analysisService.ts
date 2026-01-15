@@ -40,6 +40,13 @@ export const analysisService = {
     // 分析実行
     const { totalWords, frequencies } = analyzeText(text);
 
+    const frequenciesWithRank = frequencies.map((f, index) => ({
+      word: f.word,
+      count: f.count,
+      percentage: ((f.count / totalWords) * 100).toFixed(2),
+      rank: index + 1,
+    }));
+
     // 保存
     const id = await analysisRepository.create(
       {
@@ -47,7 +54,7 @@ export const analysisService = {
         text: text.trim(),
         totalWords,
       },
-      frequencies
+      frequenciesWithRank
     );
 
     return id;

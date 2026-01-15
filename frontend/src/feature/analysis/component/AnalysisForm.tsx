@@ -77,7 +77,7 @@ export function AnalysisForm({ onSubmit, isSubmitting }: AnalysisFormProps) {
           value={form.text}
           onInput={(e) => handleChange("text", e.currentTarget.value)}
           onBlur={() => handleBlur("text")}
-          maxLength={10000}
+          maxLength={100000}
           rows={10}
           placeholder="英語の本文を入力してください"
         />
