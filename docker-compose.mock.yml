@@ -1,0 +1,6 @@
+# Mock環境用
+
+services:
+  frontend:
+    command: ["pnpm", "--filter", "frontend", "exec", "vite", "--mode", "mock"]
+    depends_on: []

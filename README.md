@@ -38,6 +38,20 @@ docker-compose up
 http://localhost:3000
 ```
 
+### Mock環境で起動（フロントエンドのみ）
+
+バックエンドやDBを起動せず、フロントエンドのみをモックデータで動作確認できます。
+
+```bash
+# Mock環境で起動（バックエンド・DB不要）
+docker-compose -f docker-compose.yml -f docker-compose.mock.yml up frontend
+```
+
+Mock環境では以下の特徴があります：
+- バックエンドAPIの代わりにモックデータを使用
+- DB不要でフロントエンドの動作確認が可能
+- 高速に起動
+
 ### 停止方法
 
 ターミナルで `Ctrl + C` を押すか、別のターミナルで以下を実行してください。
